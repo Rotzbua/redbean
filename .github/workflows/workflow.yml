@@ -59,17 +59,19 @@ jobs:
       - name: Create SQLite DB
         run: touch /tmp/oodb.db
 
-      - name: Setup PostgreSQL extension
-        run: |
-          PGPASSWORD=postgres psql -h127.0.0.1 -U postgres -d template1 -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+      #      - name: Setup PostgreSQL extension
+      #        run: |
+      #          PGPASSWORD=postgres psql -h127.0.0.1 -U postgres -d template1 -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
 
       - name: Run PHP setup
-        run: php replica2.php onlyphp
-
-      - name: Setup test files
-        run: |
-          cp rb.php testing/cli/testcontainer/rb.php || true
-          cd testing/cli
+        run: >
+          - touch /tmp/oodb.db
+          - mysql -e 'create database oodb;'
+          - psql template1 -c 'CREATE EXTENSION "uuid-ossp";' -U postgres
+          - psql -c 'create database oodb;' -U postgres
+          - php replica2.php onlyphp
+          - cp rb.php testing/cli/testcontainer/rb.php
+          - cd testing/cli
 
       - name: Run tests
         run: php runtests.php
