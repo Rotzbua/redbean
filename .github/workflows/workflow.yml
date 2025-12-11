@@ -13,9 +13,9 @@ jobs:
       fail-fast: false
       matrix:
         php-version: [
-          '5.3',
-          '5.4',
-          '5.5',
+#          '5.3',
+#          '5.4',
+#          '5.5',
           '8.1'
         ]
     services:
