@@ -12,7 +12,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php-version: [ '8.1' ]
+        php-version: [
+          '5.3',
+          '5.4',
+          '5.5',
+          '8.1'
+        ]
     services:
       mysql:
         image: mysql:8.4
