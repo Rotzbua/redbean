@@ -12,10 +12,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        test: [
-#          'mysql',
-          'sqlite',
-        ]
         php-version: [
           '5.3',
           '5.4',
@@ -79,8 +75,8 @@ jobs:
       - run: cp rb.php testing/cli/testcontainer/rb.php
       - run: cd testing/cli
 
-      - name: Run tests ${{matrix.test}}
-        run: php runtests.php only${{matrix.test}}
+      - name: Run tests
+        run: php runtests.php
         working-directory: testing/cli
         env:
           PGUSER: postgres
