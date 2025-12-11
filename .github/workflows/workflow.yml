@@ -53,10 +53,10 @@ jobs:
 
       - name: Wait for databases
         run: |
-          timeout 60s bash -c "until mysql -h127.0.0.1 -P3306 -uroot -e 'SELECT 1'; do sleep 1; done"
+          timeout 60s bash -c "until mysql -hlocalhost -P3306 -uroot -e 'SELECT 1'; do sleep 1; done"
 
       - run: touch /tmp/oodb.db
-      - run: PGPASSWORD=password psql template1 -h127.0.0.1 -c 'CREATE EXTENSION "uuid-ossp";' -U postgres
+      - run: PGPASSWORD=password psql template1 -hlocalhost -c 'CREATE EXTENSION "uuid-ossp";' -U postgres
       - run: php replica2.php onlyphp
       - run: cp rb.php testing/cli/testcontainer/rb.php
       - run: cd testing/cli
@@ -67,8 +67,8 @@ jobs:
         env:
           PGUSER: postgres
           PGPORT: 5432
-          PGHOST: 127.0.0.1
-          MYSQL_HOST: 127.0.0.1
+          PGHOST: localhost
+          MYSQL_HOST: localhost
           MYSQL_USER: root
           MYSQL_PASS: password
           MYSQL_DB: oodb
