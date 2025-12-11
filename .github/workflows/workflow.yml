@@ -1,0 +1,76 @@
+name: PHP Tests
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        php: [8.1, 8.2, 8.3, 8.4]
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: oodb
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: oodb
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: xdebug
+
+      - name: Install libonig5 (for older PHP compatibility)
+        run: sudo apt-get update && sudo apt-get install -y libonig5
+
+      - name: Create SQLite DB
+        run: touch /tmp/oodb.db
+
+      - name: Setup PostgreSQL extension
+        run: |
+          docker exec ${{ job.services.postgres.id }} psql -U postgres -d template1 -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+          docker exec ${{ job.services.postgres.id }} createdb -U postgres oodb
+
+      - name: Run PHP setup
+        run: php replica2.php onlyphp
+
+      - name: Setup test files
+        run: |
+          cp rb.php testing/cli/testcontainer/rb.php
+          cd testing/cli
+
+      - name: Run tests
+        run: php runtests.php
+        working-directory: testing/cli
+        env:
+          PGUSER: postgres
+          PGPORT: 5432
+          PGHOST: localhost
+          XDEBUG_MODE: coverage
