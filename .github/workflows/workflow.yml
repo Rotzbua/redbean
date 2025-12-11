@@ -69,6 +69,6 @@ jobs:
           PGHOST: 127.0.0.1
           MYSQL_HOST: 127.0.0.1
           MYSQL_USER: root
-          MYSQL_PASS: root
+          MYSQL_PASS: password
           MYSQL_DB: oodb
           XDEBUG_MODE: coverage
