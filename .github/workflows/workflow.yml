@@ -58,7 +58,7 @@ jobs:
       - run: touch /tmp/oodb.db
       #- run: mysql -h127.0.0.1 -uroot -e 'create database oodb;'
       - run: psql template1 -c 'CREATE EXTENSION "uuid-ossp";' -U postgres
-      - run: psql -c 'create database oodb;' -U postgres
+      - run: psql -h127.0.0.1 -c 'create database oodb;' -U postgres
       - run: php replica2.php onlyphp
       - run: cp rb.php testing/cli/testcontainer/rb.php
       - run: cd testing/cli
