@@ -54,4 +54,32 @@ jobs:
       - name: Wait for databases
         run: |
           timeout 60s bash -c "until mysql -h127.0.0.1 -P3306 -uroot -proot -e 'SELECT 1'; do sleep 1; done"
-          timeout 60s bash -c "until PGPASSWORD=postgres psql -h127.0.0.1 -
+          timeout 60s bash -c "until PGPASSWORD=postgres psql -h127.0.0.1 -U postgres -d oodb -c 'SELECT 1'; do sleep 1; done"
+
+      - name: Create SQLite DB
+        run: touch /tmp/oodb.db
+
+      - name: Setup PostgreSQL extension
+        run: |
+          PGPASSWORD=postgres psql -h127.0.0.1 -U postgres -d template1 -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
+
+      - name: Run PHP setup
+        run: php replica2.php onlyphp
+
+      - name: Setup test files
+        run: |
+          cp rb.php testing/cli/testcontainer/rb.php || true
+          cd testing/cli
+
+      - name: Run tests
+        run: php runtests.php
+        working-directory: testing/cli
+        env:
+          PGUSER: postgres
+          PGPORT: 5432
+          PGHOST: 127.0.0.1
+          MYSQL_HOST: 127.0.0.1
+          MYSQL_USER: root
+          MYSQL_PASS: root
+          MYSQL_DB: oodb
+          XDEBUG_MODE: coverage
