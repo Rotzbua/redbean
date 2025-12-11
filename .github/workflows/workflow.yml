@@ -54,15 +54,13 @@ jobs:
         run: |
           timeout 60s bash -c "until mysql -h127.0.0.1 -P3306 -uroot -ppassword -e 'SELECT 1'; do sleep 1; done"
 
-      - name: Run PHP setup
-        run: |
-          touch /tmp/oodb.db
-          mysql -e 'create database oodb;'
-          psql template1 -c 'CREATE EXTENSION "uuid-ossp";' -U postgres
-          psql -c 'create database oodb;' -U postgres
-          php replica2.php onlyphp
-          cp rb.php testing/cli/testcontainer/rb.php
-          cd testing/cli
+      - run: touch /tmp/oodb.db
+      - run: mysql -e 'create database oodb;'
+      - run: psql template1 -c 'CREATE EXTENSION "uuid-ossp";' -U postgres
+      - run: psql -c 'create database oodb;' -U postgres
+      - run: php replica2.php onlyphp
+      - run: cp rb.php testing/cli/testcontainer/rb.php
+      - run: cd testing/cli
 
       - name: Run tests
         run: php runtests.php
