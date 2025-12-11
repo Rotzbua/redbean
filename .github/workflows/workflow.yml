@@ -48,9 +48,6 @@ jobs:
           extensions: mbstring, pdo, pdo_mysql, pdo_pgsql, sqlite3
           coverage: xdebug
 
-      - name: Install system dependencies
-        run: sudo apt-get update && sudo apt-get install -y libonig5 postgresql-client
-
       - name: Wait for databases
         run: |
           timeout 60s bash -c "until mysql -h127.0.0.1 -P3306 -uroot -proot -e 'SELECT 1'; do sleep 1; done"
