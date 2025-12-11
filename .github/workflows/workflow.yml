@@ -50,6 +50,10 @@ jobs:
           extensions: mbstring, pdo, pdo_mysql, pdo_pgsql, sqlite3
           coverage: xdebug
 
+      - name: Wait for databases
+        run: |
+          timeout 60s bash -c "until mysql -h127.0.0.1 -P3306 -uroot -ppassword -e 'SELECT 1'; do sleep 1; done"
+
       - name: Run PHP setup
         run: |
           touch /tmp/oodb.db
