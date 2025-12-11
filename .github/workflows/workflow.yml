@@ -64,14 +64,14 @@ jobs:
       #          PGPASSWORD=postgres psql -h127.0.0.1 -U postgres -d template1 -c 'CREATE EXTENSION IF NOT EXISTS "uuid-ossp";'
 
       - name: Run PHP setup
-        run: >
-          - touch /tmp/oodb.db
-          - mysql -e 'create database oodb;'
-          - psql template1 -c 'CREATE EXTENSION "uuid-ossp";' -U postgres
-          - psql -c 'create database oodb;' -U postgres
-          - php replica2.php onlyphp
-          - cp rb.php testing/cli/testcontainer/rb.php
-          - cd testing/cli
+        run: |
+          touch /tmp/oodb.db
+          mysql -e 'create database oodb;'
+          psql template1 -c 'CREATE EXTENSION "uuid-ossp";' -U postgres
+          psql -c 'create database oodb;' -U postgres
+          php replica2.php onlyphp
+          cp rb.php testing/cli/testcontainer/rb.php
+          cd testing/cli
 
       - name: Run tests
         run: php runtests.php
